@@ -1,0 +1,2 @@
+1.- No permitir registrarse si el usuario ya existe.
+2.- Que no salgan todos esos errores a tener un login incorrecto (errores del formulario).
