@@ -1,7 +1,7 @@
 <?php
   
     //empezamos la sesion al principio de todo:
-    session_start();
+    //session_start();
     
     
     $timezone = date_default_timezone_set("Europe/London");

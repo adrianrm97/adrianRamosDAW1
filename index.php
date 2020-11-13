@@ -1,5 +1,6 @@
 <?php
 $errorMensaje = "";
+$usuarioInvalido = "";
 if (isset ($_GET['errorMensaje'])) {
   $errorMensaje = $_GET['errorMensaje'];
 }
@@ -36,7 +37,7 @@ include("./emailconfirma.php");
 
       <!--FORMULARIO DE REGISTRO -->
         <form method="POST" action="index.php" id="formReg" >
-        <span class="errorMensaje"></span>
+        <span class="errorMensaje"><?php echo $usuarioInvalido?></span>
         <input type="text" name="usuario" placeholder="Usuario">
 
           <span class="errorMensaje"></span>

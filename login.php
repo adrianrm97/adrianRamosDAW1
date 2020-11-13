@@ -15,14 +15,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     //LOGIN CORRECTO
     if ($devuelto == 1) {
+        session_start();
         echo "encontrado la cuenta";
+      if ($usuario == "admin" && $password == md5("123123Aa.")) {
         $_SESSION["usuario"] = $usuario;
+        $cookie_name = "admin";
+        $cookie_value = $usuario;
+        setcookie($cookie_name, $cookie_value, time() + (86400 * 30), "/"); // 86400 = 1 day
+        print_r($_SESSION["usuario"]);
+        $sql2 = "UPDATE usuarios SET Usuario_numero_intentos='3' WHERE Usuario_nick='$usuario'";
+        $resultado = mysqli_query($con,$sql2);
+        header("Location:administracion.php");
+
+      }else{
+
+        $_SESSION["usuario"] = $usuario;
+        $cookie_name = "usuario";
+        $cookie_value = $usuario;
+        setcookie($cookie_name, $cookie_value, time() + (86400 * 30), "/"); // 86400 = 1 day
         print_r($_SESSION["usuario"]);
         $sql2 = "UPDATE usuarios SET Usuario_numero_intentos='3' WHERE Usuario_nick='$usuario'";
         $resultado = mysqli_query($con,$sql2);
         header("Location:acceso.php");
-    }else {
+    }
+ }else {
         echo "Usuario no encontrado"."<br>";
+        echo '<a href="index.php">Volver a la página de inicio de sesión</a>';
     }
 
   
@@ -35,20 +53,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
              //Significa que el usuario es correcto pero la contraseña no:
             if ($devuelto>0) {
-           
             //COGER NUMERO DE INTENTOS
             $sqlContador = "SELECT Usuario_numero_intentos FROM usuarios WHERE Usuario_nick = '$usuario'";
             $resultado = mysqli_query($con,$sqlContador);
             $contador = mysqli_fetch_array($resultado);
             $contadorIntentos = $contador['Usuario_numero_intentos'];
+            if ($contadorIntentos <= 0) {
+                $sqlUPDATE = "UPDATE usuarios SET Usuario_bloqueado = 1 WHERE Usuario_nick='$usuario'";
+                $ejecutarUpdate = mysqli_query($con,$sqlUPDATE);
+                $errorMensaje = "La cuenta está bloqueada";
+                header("Location:index.php?errorMensaje=$errorMensaje");
+            }else{
             //Añadimos al mensaje de error los intentos que le quedan
             $errorMensaje = "Número de intentos restantes: ".$contadorIntentos;
                 $contadorIntentos--;
                 $sql2 = "UPDATE usuarios SET Usuario_numero_intentos='$contadorIntentos' WHERE Usuario_nick='$usuario'";
                 $resultado = mysqli_query($con,$sql2);
                 header("Location:index.php?errorMensaje=$errorMensaje");
-                
             }
+                
+        }
     }
     
 

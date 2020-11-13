@@ -21,6 +21,14 @@ function emailEnUso($email,$con){
     return false;
 }
 
+function usuarioEnUso($usuario,$con){
+    $sql = "SELECT * from usuarios WHERE Usuario_nick = '$usuario'";
+    if (mysqli_num_rows(mysqli_query($con,$sql))>0) {
+        return true;
+    }
+    return false;
+}
+
 function passwordLongitud($password){
     if (strlen($password)<8) {
         return false;
@@ -58,9 +66,10 @@ function desinfectarUsuario($usuario){
 }
 
 
+//ARRIBA LAS FUNCIONES
 
 
-
+//ASIGNACIONES DE VALORES, SI VALIDA TODO, OK SERÁ TRUE Y HARÁ LA INSERCIÓN
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 $ok = true;
@@ -87,6 +96,10 @@ if (passwordValida($pass,$pass2)) {
 
 $usuarioCom = $_POST['usuario'];
 $usuarioCom = desinfectarUsuario($usuarioCom);
+if (usuarioEnUso($usuarioCom,$con)) {
+    $ok = false;
+    $usuarioInvalido = "El usuario ya existe";
+}
 $usuario = $usuarioCom;
 
 
@@ -144,9 +157,6 @@ if ($ok) {
 
 //FIN MAIL
     }
-
-
-    
   
 }else{
     echo "Registro no válido";
